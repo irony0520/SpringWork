@@ -1,0 +1,13 @@
+package org.zerock.mapper;
+
+import java.util.List;
+
+import org.zerock.domain.BoardAttachVO;
+
+public class BoardAttachMapper {
+	
+	public void insert(BoarAttachVO vo);
+	public void delete(String uuid);
+	public List<BoardAttachVO> findByBno(Long bno);
+
+}
