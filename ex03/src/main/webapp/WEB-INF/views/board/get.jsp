@@ -6,6 +6,8 @@
 
 <%@include file="../includes/header.jsp"%>
 
+<link rel="stylesheet" href="/resources/css/attach.css">
+
 <!-- 읽기 전용 화면 -->
 
 <div class="row">
@@ -62,6 +64,24 @@
 	</div>
 	<!-- /.col-lg-12 -->
 </div>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class = "panel-heading">첨부 파일</div>
+			
+			<div class="panel-body">
+							
+				<div class='uploadResult'>
+					<ul>
+						<!--  ajax로 작성 -->
+					</ul>	
+				</div>	
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class='row'>
 	<div class="col-lg-12">
 		<!--  /.panel -->
@@ -129,6 +149,11 @@
 	<!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<div class='bigPictureWrapper'>
+	<div class='bigPicture'>
+	</div>
+</div>
 
 
 
@@ -341,9 +366,67 @@ $(document)
 		(function(){
 			var bno = '<c:out value="${board.bno}"/>';
 			$.getJSON("/board/getAttachList", {bno:bno},function(arr){
-				console.log(arr);
+			console.log(arr);
+			var str = "";
+				
+				$(arr).each(function(i, obj) {
+					if(obj.fileType) {
+						
+						var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" + obj.uuid + "_" + obj.fileName);					
+									
+						str += "<li data-path='"+obj.uploadPath+"'";
+						str += "data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+ "' data-type='"+obj.fileType+"'><div>";					
+						str += "<img src='/display?fileName="+fileCallPath+"'>";
+						str += "</div>";
+						str + "</li>";
+							
+						
+					}else {						
+						
+						str += "<li data-path='"+obj.uploadPath+"'";
+						str += "data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+ "'data-type='"+obj.fileType+"'><div>";
+						str += "<span>" + obj.fileName + "</span>";
+						str += "<img src='/resources/img/attach.png'>";
+						str += "</div>";
+						str + "</li>";								
+					}
+					
+				});
+				
+				$(".uploadResult ul").html(str);
+					
 			});
 		})();
+		$(".uploadResult").on("click","li",function(e){
+			console.log("view image");
+			
+			var liObj = $(this);
+			
+			var path = encodeURIComponent(liObj.data("path")+"/"+liObj.data("uuid")+"_"+liObj.data("filename"));
+			
+			if(liObj.data("type")) {
+				showImage(path.replace(new RegExp(/\\/g),"/"));
+			}else{
+				self.location = "/download?fileName="+path
+			} //BoardAttachVO 변수랑 똑같이 기입
+		});
+		
+	});
+	
+	function showImage(fileCallPath) {
+		//alert(fileCallPath);
+		$(".bigPictureWrapper").css("display","flex").show();
+		$(".bigPicture")
+		.html("<img src='/display?fileName="+ fileCallPath+"'>")
+		.animate({width:'100%', height: '100%'},1000);
+		
+	}
+	
+	$(".bigPictureWrapper").on("click",function(e){
+		$(".bigPicture").animate({width:'0%', height: '0%'}, 1000);
+		setTimeout(()=> {
+			$('.bigPictureWrapper').hide();
+		},500);
 		
 	});
 
