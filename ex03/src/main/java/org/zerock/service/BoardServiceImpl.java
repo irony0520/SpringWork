@@ -9,6 +9,7 @@ import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
 import org.zerock.mapper.BoardAttachMapper;
 import org.zerock.mapper.BoardMapper;
+import org.zerock.mapper.ReplyMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -21,6 +22,7 @@ public class BoardServiceImpl implements BoardService{
 	private final BoardMapper mapper;
 	//의존성 (묵시적- 생성자쪽에서 주입)
 	private final BoardAttachMapper attachMapper;
+	private final ReplyMapper replyMapper;
 	
 	@Transactional
 	@Override
@@ -44,16 +46,30 @@ public class BoardServiceImpl implements BoardService{
 		log.info("get......");
 		return mapper.read(bno);
 	}
-
+	
+	@Transactional
 	@Override
 	public boolean modify(BoardVO board) {
 		log.info("modify.....");
-		return mapper.update(board)==1;
+		
+		attachMapper.deleteAll(board.getBno());
+		boolean modifyResult  = mapper.update(board)==1;
+		if(modifyResult && board.getAttachList() !=null && board.getAttachList().size() >0 ) {
+			board.getAttachList().forEach(attach ->{
+				attach.setBno(board.getBno());
+				attachMapper.insert(attach);
+			});
+			
+		}
+		return modifyResult;
 	}
 
 	@Override
 	public boolean remove(Long bno) {
 		log.info("remove .....");
+		
+		attachMapper.deleteAll(bno);
+		replyMapper.deleteAllByBno(bno);
 		return mapper.delete(bno) ==1;
 	}
 
