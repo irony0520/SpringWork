@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="uploadResult"/>
+		<item key="selection" value="isAuthenticated"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="uploadresult"/>
-			<item value="timeout"/>
-			<item value="showImage"/>
-			<item value="bigpicture"/>
-			<item value="bicpicture"/>
-			<item value="birpicture"/>
-			<item value="uploadpath"/>
-			<item value="uploadPath"/>
-			<item value="insert"/>
-			<item value="attachList"/>
-			<item value="targetli"/>
-			<item value="targetLi"/>
-			<item value="delete"/>
-			<item value="upload"/>
-			<item value="uploadResult"/>
+			<item value="isAuthenticated"/>
+			<item value="logoutBtn"/>
+			<item value="logoutbtn"/>
+			<item value="logoutbnt"/>
+			<item value="logout"/>
+			<item value="customlog"/>
+			<item value="custom"/>
+			<item value="modalModbtn"/>
+			<item value="addreply"/>
+			<item value="add"/>
+			<item value="addReplybtn"/>
+			<item value="new reply"/>
+			<item value="read"/>
+			<item value="readonly"/>
+			<item value="replyer"/>
 		</list>
 		<list key="replacehistory">
 			<item value="replyMapper"/>
@@ -31,8 +31,8 @@
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="2568"/>
-		<item key="DIALOG_Y_ORIGIN" value="262"/>
+		<item key="DIALOG_X_ORIGIN" value="66"/>
+		<item key="DIALOG_Y_ORIGIN" value="396"/>
 		<item key="DIALOG_WIDTH" value="393"/>
 		<item key="DIALOG_HEIGHT" value="523"/>
 		<item key="DIALOG_FONT_NAME" value="1|맑은 고딕|9.0|0|WINDOWS|1|-18|0|0|0|400|0|0|0|1|0|0|0|0|맑은 고딕"/>

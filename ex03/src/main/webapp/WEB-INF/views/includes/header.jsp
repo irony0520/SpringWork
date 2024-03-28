@@ -259,8 +259,15 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                        </li>
+                        
+                        <sec:authorize access="isAuthenticated()">
+                        	<li><a href="/logout" class="logoutBtn"><i class="fa fa-sign-out fa-fw" ></i> Logout</a></li>
+                        </sec:authorize>	
+                        
+                        <sec:authorize access="isAnonymous()">
+                        	<li><a href="/customLogin"><i class="fa fa-sign-out fa-fw"></i> Login</a></li>
+                        </sec:authorize>
+                        
                     </ul>
                     <!-- /.dropdown-user -->
                 </li>
@@ -376,6 +383,22 @@
             <!-- /.navbar-static-side -->
         </nav>
         
+ 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>	
+ 		
         <div id="page-wrapper">
+        <form class="logoutForm" role="form" method="post" action="/customLogout">
+        	<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"/>
+        </form>
         
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+        	$(document).ready(function() {
+        		$(".logoutBtn").on("click",function(e) {
+        			e.preventDefault();
+        			$(".logoutForm").submit();
+        			
+        		})
+        	})
+        	
+        </script>
+        
+        

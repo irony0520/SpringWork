@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
 
 <%@include file="../includes/header.jsp"%>
 
@@ -52,9 +52,14 @@
 					<label>Writer</label> <input class="form-control" name="writer"
 						value='<c:out value="${board.writer }"/>' readonly="readonly">
 				</div>
-
-				<button data-oper='modify' class="btn btn-default">Modify</button>
-
+				
+				<sec:authentication property="principal" var="pinfo" />
+				<sec:authorize access="isAuthenticated()">
+					<c:if test="${pinfo.username eq board.writer }">
+						<button data-oper='modify' class="btn btn-default">Modify</button>
+					</c:if>				
+				</sec:authorize>
+			
 				<button data-oper='list' class="btn btn-default">List</button>
 
 			</div>
@@ -87,9 +92,11 @@
 		<!--  /.panel -->
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<i class="fa fa-comments fa-fw"></i>Reply
-				<button id='addReplyBtn' class='btn btn-primary btn-xs pull-right'>New
-					Reply</button>
+				<i class="fa fa-comments fa-fw"></i>Reply			
+					<button id='addReplyBtn' class='btn btn-primary btn-xs pull-right'>
+					New Reply	
+					</button>
+			
 			</div>
 
 			<!-- /.panel-heading -->
@@ -105,6 +112,8 @@
 			</div>
 
 		</div>
+
+
 
 	</div>
 </div>
@@ -125,9 +134,9 @@
 						value="New reply">
 				</div>
 
-				<div class="form group">
+				<div class="form group" >
 					<label>Replyer</label> <input class="form-control" name="replyer"
-						value="replyer">
+						value="replyer" readonly="readonly">
 				</div>
 
 				<div class="form group">
@@ -219,9 +228,30 @@ $(document)
 					var modalModBtn = $("#modalModBtn");
 					var modalRemoveBtn = $("#modalRemoveBtn");
 					var modalRegistBtn = $("#modalRegistBtn");
-
+					
+					var replyer = null;
+					
+					<sec:authorize access="isAuthenticated()">
+						replyer = '<sec:authentication property="principal.username"/>';
+					</sec:authorize>	
+					
+					var csrfHeaderName = "${_csrf.headerName}";
+					var csrfTokenValue = "${_csrf.token}";
+					
+					$(document).ajaxSend(function(e,xhr,options) {
+						xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+					});
+					
 					$("#addReplyBtn").on("click", function(e) {
+						
+						<sec:authorize access="isAnonymous()">
+							location.href="/customLogin";
+							return;
+						</sec:authorize>
+						
+						
 						modal.find("input").val("");
+						modal.find("input[name='replyer']").val(replyer);
 						modalInputReplyDate.closest("div").hide();
 						modal.find("button[id !='modalCloseBtn']").hide();
 
@@ -265,7 +295,25 @@ $(document)
 					});				
 					
 					modalModBtn.on("click",function(e){
-						var reply = {rno:modal.data("rno"), reply:modalInputReply.val()};
+						
+						
+						var originalReplyer = modalInputReplyer.val();
+						
+						var reply = {rno:modal.data("rno"), reply:modalInputReply.val(),
+								replyer: originalReplyer};
+						
+						if(!replyer) {
+							alert("로그인 후 수정이 가능합니다.")
+							modal.modal("hide");
+							return;
+						}
+						
+						if(replyer != originalReplyer) {
+							alert("자신이 작성한 댓글만 수정 가능합니다.");
+							modal.modal("hide");
+							return;
+						}
+						
 						replyService.update(reply, function(result){
 							alert(result);
 							modal.modal("hide");
@@ -275,7 +323,21 @@ $(document)
 					
 					modalRemoveBtn.on("click", function(e){
 						var rno = modal.data("rno");
-						replyService.remove(rno, function(result){
+						
+						if(!replyer){
+							alert("로그인 후 삭제가 가능합니다");
+							modal.modal("hide");
+							return;
+						}
+						var originalReplyer = modalInputReplyer.val();
+						
+						if(replyer != originalReplyer) {
+							alert("자신이 작성한 댓글만 삭제 가능합니다.");
+							modal.modal("hide");
+							return;
+						}
+						
+						replyService.remove(rno,originalReplyer, function(result){
 							
 							alert(result);
 							modal.modal("hide");
@@ -408,7 +470,7 @@ $(document)
 				showImage(path.replace(new RegExp(/\\/g),"/"));
 			}else{
 				self.location = "/download?fileName="+path
-			} //BoardAttachVO 변수랑 똑같이 기입
+			} 
 		});
 		
 	});
